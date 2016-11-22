@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>MOCK JSON</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+</head>
+
+<body>
+    <h3 style="padding:30px;text-align: center">修改MOCK JSON</h3>
+    <div class="container">
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label for="name" class="col-sm-2 control-label">姓名</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="name" placeholder="请输入姓名" value="kk" required="required">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="url" class="col-sm-2 control-label">URL</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="url" placeholder="请输入URL" value="http://test/1" required="required">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="json" class="col-sm-2 control-label">JSON</label>
+                <div class="col-sm-9">
+                    <textarea placeholder="请输入json" class="form-control" id="json" name="json" rows="5">{'test':'eser'}</textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="misc" class="col-sm-2 control-label">备注</label>
+                <div class="col-sm-9">
+                    <textarea placeholder="" class="form-control" id="misc" name="misc" rows="2"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <a class="btn btn-default col-xs-1" href="/html/main.html" role="button" id="back_btn">返回</a>
+                    <button type="submit" class="btn btn-primary col-sm-3 col-sm-offset-3" id="confirm_btn">确认修改</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>
+<script type="text/javascript" src="/js/jquery.min.js"></script>
+<script type="text/javascript">
+    
+</script>
+
