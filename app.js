@@ -4,13 +4,13 @@ var fs = require('fs');
 var util = require('util');
 var querystring = require("querystring");
 var low = require('lowdb');
+var moment = require('moment')
+var FileSync = require('lowdb/adapters/FileSync');
 var path = require('path');
-
-var arg = process.argv.splice(2);
-
-// var HOST = "192.178.100.88";
-var HOST = arg[0] || '192.178.106.152';
-//var HOST = '192.168.1.107';
+var exec = require('child_process').exec,
+    child
+var interfaces = require('os').networkInterfaces();　　
+//指定端口
 var PORT = 8093;
 
 var mimetype = {
@@ -78,16 +78,7 @@ var page_500 = function(req, res, error) {
 }
 
 var getTime = function() {
-    var mydate = new Date(Date.now());
-    var month = mydate.getMonth() + 1;
-    if (mydate.getDate() < 10) {
-        var day = "0" + mydate.getDate();
-    } else {
-        var day = mydate.getDate();
-    }
-
-    var time = mydate.getFullYear() + "" + month + day + mydate.getHours() + mydate.getMinutes() + mydate.getSeconds();
-    return time;
+    return moment().format('YYYY-MM-DD HH:mm:ss');
 }
 
 var _formatUrl = function(url) {
@@ -110,24 +101,23 @@ var _getPostData = function(req, func) {
 
     // 数据接收完毕，执行回调函数
     req.addListener("end", function() {
-        console.log('Before:' + JSON.stringify(postData));
         func(postData);
     });
 }
 
+//全部模拟数据
 var all_mock = function(req, res) {
-    console.log(process.env.HOME);
     walk("./json", function(err, results) {
         if (err) throw err;
-        console.log(results);
         var result = [];
         for (var i = 0; i < results.length; i++) {
             var val = results[i];
             val = val.replace(/^\.\.\//, '').replace(/^\.\//, '');
-            console.log('path:' + val);
-            var db = low(val);
-            console.log(db('data').value()[0]);
-            result.push(db('data').value()[0]);
+            var adapter = new FileSync(val)
+            var db = low(adapter)
+            if (db.get('data').value()) {
+                result.push(db.get('data').value()[0]);
+            }
         }
         res.writeHead(200, {
             'Content-Type': 'application/json;charset=utf-8'
@@ -137,20 +127,20 @@ var all_mock = function(req, res) {
     });
 }
 
+//添加模拟数据
 var add_mock = function(req, res) {
     _getPostData(req, function(postData) {
-        console.log('POSTDATA:' + JSON.stringify(postData));
         var params = querystring.parse(postData);
         params.createTime = getTime();
         params.updateTime = params.createTime;
         params.url = _getUrlKey(params.url);
 
         var _url = params.url;
-        console.log("format url:" + _url);
-        var db = low('json/' + _formatUrl(_url) + ".json");
-        var id = db('data').find({
+        var adapter = new FileSync('json/' + _formatUrl(_url) + ".json")
+        var db = low(adapter)
+        var id = db.get('data').find({
             url: params.url
-        });
+        }).value();
         try {
             if (id) {
                 res.writeHead(200, {
@@ -160,7 +150,14 @@ var add_mock = function(req, res) {
                 res.end();
             } else {
                 params = JSON.parse(JSON.stringify(params));
-                var b = db('data').push(params);
+                // Set some defaults
+                db.defaults({ data: [] })
+                    .write()
+
+                // Add a data
+                db.get('data')
+                    .push(params)
+                    .write()
                 res.writeHead(200, {
                     'Content-Type': 'application/json;charset=utf-8'
                 });
@@ -177,43 +174,104 @@ var add_mock = function(req, res) {
     });
 }
 
+//删除模拟数据
 var delete_mock = function(req, res) {
-    res.writeHead(200, {
-        'Content-Type': 'application/json;charset=utf-8'
-    });
-    res.write('{"errCode":"000","errMsg":"删除成功"}');
-    res.end();
+    try {
+        _getPostData(req, function(postData) {
+            var params = querystring.parse(postData);
+            params.url = _getUrlKey(params.url);
+
+            var _url = params.url;
+            child = exec('rm -rf ./json/' + _url.replace('/', '_') + '.json', function(err, out) {
+                err && console.log(err);
+            });
+        })
+        res.writeHead(200, {
+            'Content-Type': 'application/json;charset=utf-8'
+        });
+        res.write('{"errCode":"000","errMsg":"删除成功"}');
+        res.end();
+    } catch (e) {
+        res.writeHead(200, {
+            'Content-Type': 'application/json;charset=utf-8'
+        });
+        res.write('{"errCode":"2","errMsg":"服务忙，请重新删除，谢谢！"}');
+        res.end();
+    }
+
 }
 
+//查询模拟数据
+var search_mock = function(req, res) {
+    try {
+        _getPostData(req, function(postData) {
+            var params = querystring.parse(postData);
+            params.url = _getUrlKey(params.url);
+            var _url = params.url;
+            var paramsJson = 'json/' + _url.replace('/', '_') + '.json'
+            walk("./json", function(err, results) {
+                if (err) throw err;
+                var result = [];
+                for (var i = 0; i < results.length; i++) {
+                    var val = results[i];
+                    val = val.replace(/^\.\.\//, '').replace(/^\.\//, '');
+                    var adapter = new FileSync(val)
+                    var db = low(adapter)
+                    if ((val == paramsJson) && db.get('data').value()) {
+                        result.push(db.get('data').value()[0]);
+                        res.writeHead(200, {
+                            'Content-Type': 'application/json;charset=utf-8'
+                        });
+                        res.write(JSON.stringify(result));
+                        res.end();
+                        return;
+                    }
+                }
+                res.writeHead(200, {
+                    'Content-Type': 'application/json;charset=utf-8'
+                });
+                res.write('{"errCode":"2","errMsg":"查询不到该数据！请重试"}');
+                res.end();
+            });
+        })
+    } catch (e) {
+        res.writeHead(200, {
+            'Content-Type': 'application/json;charset=utf-8'
+        });
+        res.write('{"errCode":"2","errMsg":"服务忙，请重新查询，谢谢！"}');
+        res.end();
+    }
+
+}
+
+//更新模拟数据
 var update_mock = function(req, res) {
     _getPostData(req, function(postData) {
-        console.log('POSTDATA:' + JSON.stringify(postData));
         var params = querystring.parse(postData);
         params.updateTime = getTime();
         params.url = _getUrlKey(params.url);
 
         var _url = params.url;
-        console.log("format url:" + _url);
-        var db = low('json/' + _formatUrl(_url) + ".json");
-        var id = db('data').find({
+        var adapter = new FileSync('json/' + _formatUrl(_url) + ".json")
+        var db = low(adapter)
+        var id = db.get('data').find({
             url: params.url
         });
-        console.log(JSON.stringify(params.json));
         params.json = JSON.parse(JSON.stringify(params.json));
         try {
             if (id) {
-                db('data')
-                    .chain()
-                    .find({ url:  params.url})
-                    .assign({ json: params.json, updateTime:params.updateTime})
-                    .value();
+                db.get('data')
+                    .find({ url: params.url })
+                    .set('json', params.json)
+                    .set('updateTime', params.updateTime)
+                    .write();
                 res.writeHead(200, {
                     'Content-Type': 'application/json;charset=utf-8'
                 });
                 res.write('{"errCode":"1","errMsg":"更新成功！"}');
                 res.end();
             } else {
-                var b = db('data').push(params);
+                var b = db.get('data').push(params);
                 res.writeHead(200, {
                     'Content-Type': 'application/json;charset=utf-8'
                 });
@@ -221,29 +279,30 @@ var update_mock = function(req, res) {
                 res.end();
             }
         } catch (err) {
-            console.log(err);
             res.writeHead(200, {
                 'Content-Type': 'application/json;charset=utf-8'
             });
             res.write('{"errCode":"2","errMsg":"服务忙，请重新提交，谢谢！"}');
             res.end();
         }
-    });}
+    });
+}
 
-var mock_api = function(req, res, pathName,params) {
-     var params = params;
+var mock_api = function(req, res, pathName, params) {
+    var params = params;
     var _pathName = pathName;
-    _pathName = _pathName.replace(/^\/mock/, '');//获取到接口名称
-    var jsonPath = "./json/" + _formatUrl(_pathName) + ".json";//拼接文件路径名称
+    _pathName = _pathName.replace(/^\/mock/, ''); //获取到接口名称
+    var jsonPath = "./json/" + _formatUrl(_pathName) + ".json"; //拼接文件路径名称
     fs.stat(jsonPath, function(err, stat) {
         if (stat && stat.isFile()) {
-            var db = low(jsonPath);
+            var adapter = new FileSync(jsonPath)
+            var db = low(adapter)
             try {
-                var jsonData =  db('data').value()[0]['json'];
-                 if(params.query.callback){
-                    jsonData =  params.query.callback+"("+JSON.parse(JSON.stringify(jsonData))+")";
-                }else{
-                    jsonData =  JSON.parse(JSON.stringify(jsonData));
+                var jsonData = db.get('data').value()[0]['json'];
+                if (params.query.callback) {
+                    jsonData = params.query.callback + "(" + JSON.parse(JSON.stringify(jsonData)) + ")";
+                } else {
+                    jsonData = JSON.parse(JSON.stringify(jsonData));
                 }
                 res.writeHead(200, {
                     'Content-Type': 'application/json;charset=utf-8'
@@ -258,7 +317,6 @@ var mock_api = function(req, res, pathName,params) {
                 res.end();
             }
         } else {
-            console.log(jsonPath+' not exist');
             res.writeHead(200, {
                 'Content-Type': 'application/json;charset=utf-8'
             });
@@ -273,16 +331,16 @@ var route = {
     "/all": function(req, res) {
         return all_mock(req, res);
     },
+    "/search": function(req, res) {
+        return search_mock(req, res);
+    },
     "/add": function(req, res) {
-        console.log("enter in add");
         return add_mock(req, res);
     },
     "/delete": function(req, res) {
-        console.log('enter in delete');
         return delete_mock(req, res);
     },
     "/update": function(req, res) {
-        console.log('enter in update');
         return update_mock(req, res);
     }
 }
@@ -294,22 +352,16 @@ http.createServer(function(req, res) {
             var val = route[item];
             var type = typeof val;
             if (type == "string") {
-                console.log("it's string");
                 pathname = val;
             } else if (type == "function") {
-                console.log("It's function");
                 return val.call(null, req, res);
-            } else {
-                console.log('NO MATCH ROUTE');
-            }
+            } else {}
         }
     }
 
     if (pathname.indexOf("/mock") == 0) {
-        return mock_api(req, res, pathname,params);
+        return mock_api(req, res, pathname, params);
     }
-
-    console.log('PATHNAME:' + pathname);
 
     var realPath = __dirname + pathname;
     fs.exists(realPath, function(exists) {
@@ -327,6 +379,6 @@ http.createServer(function(req, res) {
             });
         }
     });
-}).listen(PORT, HOST);
+}).listen(PORT);
 
-console.log('Server running at http://' + HOST + ':' + PORT + '/');
+console.log('Server running at http://localhost' + ':' + PORT);

@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>MOCK JSON</title>
     <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/sweetalert.css">
 </head>
 
 <body>
@@ -42,37 +43,50 @@
         </form>
     </div>
 </body>
+
 </html>
 <script type="text/javascript" src="/js/jquery.min.js"></script>
+<script src="../js/sweetalert.min.js"></script>
 <script type="text/javascript">
-    $(function(){
-        $('form').submit(function(e){
+    $(function() {
+        $('form').submit(function(e) {
             e.preventDefault();
-            var _data = {
-                name :$("#name").val(),
-                url  :$("#url").val(),
-                json :$("#json").val(),
-                misc :$("#misc").val() || ""
-            };
+
+            var patt = /^(?![/]).*$(([a-zA-Z0-9_-])+(\.)?)*(:\d+)?(\/((\.)?(\?)?=?&?[a-zA-Z0-9_-](\?)?)*)*$/i;
+            if (patt.test($("#url").val())) {
+                var _data = {
+                    name: $("#name").val(),
+                    url: $("#url").val(),
+                    json: $("#json").val(),
+                    misc: $("#misc").val() || ""
+                };
+            } else {
+                swal("提示", "请填写合法url，不能以' / '开头！", "error");
+                return;
+            }
             $.ajax({
-                cache:true,
-                url: '/add',
-                type: 'POST',
-                dataType: 'json',
-                data: _data,
-            })
-            .success(function(data) {
-                console.log(data.errMsg);
-            })
-            .error(function() {
-                console.log('error');
-                console.log(data.errMsg);
-            })
-            .complete(function() {
-                console.log("complete");
-            });
+                    cache: true,
+                    url: '/add',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: _data,
+                })
+                .success(function(data) {
+                    if (data.errCode == "000") {
+                        swal("提示", data.errMsg, "success");
+                        setTimeout(function() {
+                            history.go(-1);
+                        }, 1000)
+                    } else {
+                        swal("提示", data.errMsg, "error");
+                    }
+                })
+                .error(function(data) {
+                    swal("提示", data.errMsg, "error");
+                })
+                .complete(function(data) {
+                    console.log("complete");
+                });
         });
     });
 </script>
-
-

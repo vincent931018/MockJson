@@ -5,74 +5,87 @@
     <meta charset="UTF-8">
     <title>MOCK JSON</title>
     <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/sweetalert.css">
     <style type="text/css">
-    .title {
-        text-align: center;
-        color: #363636;
-        padding: 10px;
-    }
-    
-    td {
-        color: #363636;
-    }
-    
-    .table tr:first-child {
-        background-color: # !important;
-        background: -webkit-linear-gradient(#d9edff, #d9edf7); /* Safari 5.1 - 6.0 */
-        background: -o-linear-gradient(#d9edff, #d9edf7); /* Opera 11.1 - 12.0 */
-        background: -moz-linear-gradient(#d9edff, #d9edf7); /* Firefox 3.6 - 15 */
-        background: linear-gradient(#d9edff, #d9edf7); /* 标准的语法 */
-
-    }
-    
-    .table tr:first-child td {
-        color: #363636;
-        font-weight: bold;
-    }
-    
-    tr td:first-child {
-        font-weight: bold;
-        width:20px;
-    }
-    
-    .table tr:hover {
-        background: -webkit-linear-gradient(#efefef, #e0e0e0); /* Safari 5.1 - 6.0 */
-        background: -o-linear-gradient(#efefef, #e0e0e0); /* Opera 11.1 - 12.0 */
-        background: -moz-linear-gradient(#efefef, #e0e0e0); /* Firefox 3.6 - 15 */
-        background: linear-gradient(#efefef, #e0e0e0); /* 标准的语法 */
-    }
-    
-    a.btn {
-        margin-left: 20px;
-    }
-    .json{
-        max-width:400px;
-        white-space:nowrap;
-        overflow:hidden;
-        text-overflow:ellipsis;
-    }
-    .json textarea{
-        width:100%;
-        height:100%;
-        border:none;
-        height:26px;
-        background-color: transparent;
-        overflow: hidden;
-        resize : none;
-    }
-    .json textarea:focus{
-        background-color:white;
-        border:none;
-        overflow: auto;
-        height:80px;
-        outline:none;
-    }
-    .bp-btns a.btn:first-child{
-        margin-left:0px;
-    }
-    .bp-btns a.btn:last-child{
-        margin-left: 10px;
-    }
+        .title {
+            text-align: center;
+            color: #363636;
+            padding: 10px;
+        }
+        
+        td {
+            color: #363636;
+            text-align: center;
+        }
+        
+        .table tr:first-child {
+            background: -webkit-linear-gradient(#d9edff, #d9edf7);
+            /* Safari 5.1 - 6.0 */
+            background: -o-linear-gradient(#d9edff, #d9edf7);
+            /* Opera 11.1 - 12.0 */
+            background: -moz-linear-gradient(#d9edff, #d9edf7);
+            /* Firefox 3.6 - 15 */
+            background: linear-gradient(#d9edff, #d9edf7);
+            /* 标准的语法 */
+        }
+        
+        .table tr:first-child td {
+            color: #363636;
+            font-weight: bold;
+        }
+        
+        tr td:first-child {
+            font-weight: bold;
+            width: 10px;
+        }
+        
+        .table tr:hover {
+            background: -webkit-linear-gradient(#efefef, #e0e0e0);
+            /* Safari 5.1 - 6.0 */
+            background: -o-linear-gradient(#efefef, #e0e0e0);
+            /* Opera 11.1 - 12.0 */
+            background: -moz-linear-gradient(#efefef, #e0e0e0);
+            /* Firefox 3.6 - 15 */
+            background: linear-gradient(#efefef, #e0e0e0);
+            /* 标准的语法 */
+        }
+        
+        a.btn {
+            margin-left: 10px;
+        }
+        
+        .json {
+            max-width: 400px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .json textarea {
+            width: 100%;
+            height: 100%;
+            border: none;
+            height: 26px;
+            background-color: transparent;
+            overflow: hidden;
+            resize: none;
+        }
+        
+        .json textarea:focus {
+            background-color: white;
+            border: none;
+            overflow: auto;
+            height: 80px;
+            outline: none;
+        }
+        
+        .bp-btns a.btn:first-child {
+            margin-left: 0px;
+        }
+        
+        .bp-btns a.btn:last-child {
+            margin-left: 10px;
+        }
     </style>
 </head>
 
@@ -80,123 +93,193 @@
     <div class="container">
         <div style="padding-top:20px">
             <div class="col-md-5 col-md-offset-2">
-                <input class="form-control" type="text" placeholder="搜索">
+                <input class="form-control" type="text" placeholder="请输入URL">
+            </div>
+            <div class="col-md-1">
+                <a class="btn btn-default search" role="button">搜索</a>
             </div>
             <div class="col-md-2">
                 <a class="btn btn-default" href="/html/add.html" role="button">添加</a>
             </div>
             <div style="padding:30px"></div>
             <table class="table table-striped" id="table_container">
-                <!-- <tr>
-                    <td class="col-xs-1">#</td>
-                    <td class="col-xs-2">URL</td>
-                    <td class="col-xs-4">JSON</td>
-                    <td class="col-xs-1">创建人</td>
-                    <td class="col-xs-1">创建时间</td>
-                    <td class="col-xs-1">最后修改时间</td>
-                    <td class="col-xs-1">备注</td>
-                    <td class="col-xs-2">操作</td>
-                </tr>
-                <tr>
-                    <td class="col-xs-1">1</td>
-                    <td class="col-xs-2">http://test/1</td>
-                    <td class="col-xs-4">{"test":1,"name":"kk"}</td>
-                    <td class="col-xs-1">kk</td>
-                    <td class="col-xs-1">2015-11-27 10:30</td>
-                    <td class="col-xs-1">2015-11-27 10:30</td>
-                    <td class="col-xs-1"></td>
-                    <td class="col-xs-2">
-                        <a class="btn btn-default btn-info" href="/html/modify.html" role="button" style="margin-bottom:3px;">修改</a>
-                        <a class="btn btn-default btn-danger" onclick="alert('删除成功');" role="button" >删除</a>
-                    </td>
-                </tr>
- -->        </table>
+            </table>
         </div>
     </div>
 </body>
 
 </html>
 <script type="text/javascript" src="/js/jquery.min.js"></script>
+<script src="../js/sweetalert.min.js"></script>
 <script type="text/javascript">
-    var formatTime = function(createTime){
-        return createTime.substring(0,4)+"-"+createTime.substring(4,6)+"-"+createTime.substring(6,8)+" "+createTime.substring(8,10)+":"+createTime.substring(10,12)+":"+createTime.substring(12,14);
-    }
-    $(function(){
+    $(function() {
+        var table = '<tr><td class="col-md-1">#</td>' +
+            '<td class="col-md-2">URL</td>' +
+            '<td class="col-md-4 json">JSON</td>' +
+            '<td class="col-md-1">创建人</td>' +
+            '<td class="col-md-1">创建时间</td>' +
+            '<td class="col-md-1">修改时间</td>' +
+            '<td class="col-md-1">备注</td>' +
+            '<td class="col-md-2">操作</td>' +
+            '</tr>';
         $.ajax({
-            url: '/all',
-            type: 'POST',
-            dataType: 'json',
-        })
-        .success(function(data) {
-            console.log("success");
-            var table = '<tr><td class="col-md-1">#</td>'
-                    +'<td class="col-md-2">URL</td>'
-                    +'<td class="col-md-4 json">JSON</td>'
-                    +'<td class="col-md-1">创建人</td>'
-                    +'<td class="col-md-1">创建时间</td>'
-                    +'<td class="col-md-1">最后修改时间</td>'
-                    +'<td class="col-md-1">备注</td>'
-                    +'<td class="col-md-2">操作</td>'
-                +'</tr>';
-            for (var i = 0; i < data.length; i++) {
-                var item = data[i];
-                var _json = item.json;
-                _json = _json.replace(/\t/g,'').replace(/\r\n/g,'').replace(/\r/g,'').replace(/\n/g,'');
-                table += ('<tr>'
-                    +'<td class="col-md-1">'+i+'</td>'
-                    +'<td class="col-md-2">'+item.url+'</td>'
-                    +'<td class="col-md-4 json"><textarea>'+_json+'</textarea></td>'
-                    +'<td class="col-md-1">'+item.name+'</td>'
-                    +'<td class="col-md-1">'+formatTime(item.createTime)+'</td>'
-                    +'<td class="col-md-1">'+formatTime(item.updateTime)+'</td>'
-                    +'<td class="col-md-1">'+item.misc+'</td>'
-                    +'<td class="col-md-2 bp-btns">'
-                        +'<a class="btn btn-default btn-info modify" role="button" >修改</a>'
-                        +'<a class="btn btn-default btn-danger delete" role="button" >删除</a>'
-                    +'</td>'
-                +'</tr>');
-            };
-            $("#table_container").append(table);
-        })
-        .error(function() {
-            console.log("error");
-        })
-        .complete(function() {
-            console.log("complete");
-        });
+                url: '/all',
+                type: 'POST',
+                dataType: 'json',
+            })
+            .success(function(data) {
+                for (var i = 0; i < data.length; i++) {
+                    var item = data[i];
+                    if (item) {
+                        var _json = item.json;
+                    } else {
+                        continue;
+                    }
+                    _json = _json.replace(/\t/g, '').replace(/\r\n/g, '').replace(/\r/g, '').replace(/\n/g, '');
+                    table += ('<tr  class="origin">' +
+                        '<td class="col-md-1">' + i + '</td>' +
+                        '<td class="col-md-2">' + item.url + '</td>' +
+                        '<td class="col-md-4 json"><textarea>' + _json + '</textarea></td>' +
+                        '<td class="col-md-1">' + item.name + '</td>' +
+                        '<td class="col-md-1">' + item.createTime + '</td>' +
+                        '<td class="col-md-1">' + item.updateTime + '</td>' +
+                        '<td class="col-md-1">' + item.misc + '</td>' +
+                        '<td class="col-md-2 bp-btns">' +
+                        '<a class="btn btn-default btn-info modify" role="button" >修改</a>' +
+                        '<a class="btn btn-default btn-danger delete" role="button" >删除</a>' +
+                        '</td>' +
+                        '</tr>');
+                };
+                $("#table_container").append(table);
+            })
+            .error(function() {
+                swal("提示", data.errMsg, "error");
+            })
+            .complete(function() {
+                console.log("complete");
+            });
 
-        $("table").delegate("a.btn","click",function(event){
+        $("table").delegate("a.btn", "click", function(event) {
             var isModify = $(this).hasClass("modify");
+            var isDelete = $(this).hasClass("delete");
             var _$tr = $(this).parent("td").parent("tr");
-            console.log(_$tr.attr("class"));
-            console.log(_$tr.find("td").eq(1).html());
-            var _url = (_$tr.find("td").eq(1).html()||"").trim();
-            var _json = (_$tr.find("td").eq(2).find("textarea").val()||"").trim();
-            if(isModify){
+            var _url = (_$tr.find("td").eq(1).html() || "").trim();
+            var _json = (_$tr.find("td").eq(2).find("textarea").val() || "").trim();
+            //修改
+            if (isModify) {
                 var _data = {
-                    url  : _url,
-                    json : _json
+                    url: _url,
+                    json: _json
                 };
                 $.ajax({
-                    cache:true,
-                    url: '/update',
+                        cache: true,
+                        url: '/update',
+                        type: 'POST',
+                        dataType: 'json',
+                        data: _data,
+                    })
+                    .success(function(data) {
+                        swal("提示", data.errMsg, "success");
+                    })
+                    .error(function(data) {
+                        swal("提示", data.errMsg, "error");
+                    })
+                    .complete(function(data) {
+                        console.log("complete");
+                    });
+            }
+            //删除
+            if (isDelete) {
+                var _data = {
+                    url: _url
+                };
+                $.ajax({
+                        cache: false,
+                        url: '/delete',
+                        type: 'POST',
+                        dataType: 'json',
+                        data: _data,
+                    })
+                    .success(function(data) {
+                        swal("提示", data.errMsg, "success");
+                        setTimeout(function() {
+                            location.reload();
+                        }, 1000)
+                    })
+                    .error(function(data) {
+                        swal("提示", data.errMsg, "error");
+                    })
+                    .complete(function(data) {
+                        console.log("complete");
+                    });
+            }
+
+        });
+
+        $('.search').click(function() {
+            var postUrl = $.trim($('.form-control').val());
+            if (!$('.form-control').val()) {
+                swal("请输入URL！");
+                return;
+            }
+
+            var patt = /^(?![/]).*$(([a-zA-Z0-9_-])+(\.)?)*(:\d+)?(\/((\.)?(\?)?=?&?[a-zA-Z0-9_-](\?)?)*)*$/i;
+            if (!patt.test(postUrl)) {
+                swal("提示", "请填写合法url，不能以' / '开头！", "error");
+                return;
+            }
+
+            $("#table_container")[0].innerHTML = '<tr><td class="col-md-1">#</td>' +
+                '<td class="col-md-2">URL</td>' +
+                '<td class="col-md-4 json">JSON</td>' +
+                '<td class="col-md-1">创建人</td>' +
+                '<td class="col-md-1">创建时间</td>' +
+                '<td class="col-md-1">修改时间</td>' +
+                '<td class="col-md-1">备注</td>' +
+                '<td class="col-md-2">操作</td>' +
+                '</tr>';
+            var _data = {
+                url: postUrl
+            };
+            $.ajax({
+                    cache: false,
+                    url: '/search',
                     type: 'POST',
                     dataType: 'json',
                     data: _data,
                 })
                 .success(function(data) {
-                    alert(data.errMsg);
+                    if (data.errCode) {
+                        swal("提示", '查询不到该数据 请重试！', "warning");
+                        return;
+                    }
+                    for (var i = 0; i < data.length; i++) {
+                        var item = data[i];
+                        var _json = item.json;
+                        _json = _json.replace(/\t/g, '').replace(/\r\n/g, '').replace(/\r/g, '').replace(/\n/g, '');
+                        table = ('<tr class="origin">' +
+                            '<td class="col-md-1">' + i + '</td>' +
+                            '<td class="col-md-2">' + item.url + '</td>' +
+                            '<td class="col-md-4 json"><textarea>' + _json + '</textarea></td>' +
+                            '<td class="col-md-1">' + item.name + '</td>' +
+                            '<td class="col-md-1">' + item.createTime + '</td>' +
+                            '<td class="col-md-1">' + item.updateTime + '</td>' +
+                            '<td class="col-md-1">' + item.misc + '</td>' +
+                            '<td class="col-md-2 bp-btns">' +
+                            '<a class="btn btn-default btn-info modify" role="button" >修改</a>' +
+                            '<a class="btn btn-default btn-danger delete" role="button" >删除</a>' +
+                            '</td>' +
+                            '</tr>');
+                    };
+                    $("#table_container").append(table);
                 })
-                .error(function() {
-                    console.log('error');
-                    alert(data.errMsg);
+                .error(function(data) {
+                    swal("提示", data.errMsg, "error");
                 })
-                .complete(function() {
+                .complete(function(data) {
                     console.log("complete");
                 });
-            }
-            
-        });
-        
-    }); 
+        })
+
+    });
 </script>

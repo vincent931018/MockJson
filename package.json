@@ -1,11 +1,25 @@
 {
   "name": "mock-json",
   "version": "1.0.0",
-  "description": "",
+  "description": "MockJson for development",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app"
   },
-  "author": "King",
-  "license": "ISC"
+  "author": "caowencheng <845982120@qq.com>",
+  "license": "MIT",
+  "dependencies": {
+    "lowdb": "^1.0.0",
+    "moment": "^2.18.1"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.lanrenyun.cn:lanrenyun/lazy-mock.git"
+  },
+  "keywords": [
+    "mockData",
+    "for",
+    "development"
+  ]
 }
