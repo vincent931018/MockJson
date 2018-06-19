@@ -305,22 +305,28 @@ var mock_api = function(req, res, pathName, params) {
                     jsonData = JSON.parse(JSON.stringify(jsonData));
                 }
                 res.writeHead(200, {
-                    'Content-Type': 'application/json;charset=utf-8'
+                    'Content-Type': 'application/json;charset=utf-8',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, DELETE'
                 });
                 res.write(jsonData);
                 res.end();
             } catch (err) {
                 res.writeHead(200, {
-                    'Content-Type': 'application/json;charset=utf-8'
+                    'Content-Type': 'application/json;charset=utf-8',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, DELETE'
                 });
-                res.write('{"errCode":"222","errMsg":"服务忙，请重新提交，谢谢！"}');
+                res.write({"errCode":"222","errMsg":"服务忙，请重新提交，谢谢！"});
                 res.end();
             }
         } else {
             res.writeHead(200, {
-                'Content-Type': 'application/json;charset=utf-8'
+                'Content-Type': 'application/json;charset=utf-8',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, DELETE'
             });
-            res.write('{"errCode":"111","errMsg":"请求路径不对"}');
+            res.write({"errCode":"111","errMsg":"请求路径不对"});
             res.end();
         }
     })
